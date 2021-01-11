@@ -96,7 +96,6 @@ app.get('/getUserById/:id', function (req, res) {
 app.post('/updateUserInfos', function (req, res) {
     req.header('Content-type', 'application/json');
     
-    console.log(req.body);
     client.update({
         index: 'researchers',
         id: req.body.id,
@@ -115,10 +114,37 @@ app.post('/updateUserInfos', function (req, res) {
         if (err) {
             console.log(err)
         } else {
-            
-            return res.status(200).send(
-                
-            )
+            return res.status(200).send({
+                message: 'Successfully updated nom / prenom / about'
+            })
+        }
+    }); 
+})
+
+//POST METHOD TO UPDATE SOCIAL MEDIA PROFILES
+app.post('/updateSocialMedia', function (req, res) {
+    req.header('Content-type', 'application/json');
+    
+    client.update({
+        index: 'researchers',
+        id: req.body.id,
+        body: {
+            script: {
+              source: "if(params.name == 'Facebook') {ctx._source.facebook = params.identifier;} if(params.name == 'LinkedIn') {ctx._source.linkedin = params.identifier;} if(params.name == 'Twitter') {ctx._source.twitter = params.identifier;} if(params.name == 'Orcid') {ctx._source.orcid = params.identifier;}",
+              lang: 'painless',
+              params: {
+                  name: req.body.social_media,
+                  identifier: req.body.identifier
+              }
+            }
+          }
+    }, (err, result) => {
+        if (err) {
+            console.log(err)
+        } else {
+            return res.status(200).send({
+                message: 'Successfully updated social media profiles'
+            })
         }
     }); 
 })
