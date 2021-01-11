@@ -149,4 +149,30 @@ app.post('/updateSocialMedia', function (req, res) {
     }); 
 })
 
+app.post('/removeSocialMedia', function (req, res) {
+    req.header('Content-type', 'application/json');
+    
+    client.update({
+        index: 'researchers',
+        id: req.body.id,
+        body: {
+            script: {
+              source: "if(params.name == 'Facebook') {ctx._source.facebook = '';} if(params.name == 'LinkedIn') {ctx._source.linkedin = '';} if(params.name == 'Twitter') {ctx._source.twitter = '';} if(params.name == 'Orcid') {ctx._source.orcid = '';}",
+              lang: 'painless',
+              params: {
+                  name: req.body.social_media
+              }
+            }
+          }
+    }, (err, result) => {
+        if (err) {
+            console.log(err)
+        } else {
+            return res.status(200).send({
+                message: 'Successfully removed social media id'
+            })
+        }
+    }); 
+})
+
 app.listen(port, () => {console.log('listening on port ' + port)});
