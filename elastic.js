@@ -274,4 +274,30 @@ app.post('/addAffiliation', function (req, res) {
     }); 
 })
 
+app.post('/removeAffiliation', function (req, res) {
+    req.header('Content-type', 'application/json');
+    
+    client.update({
+        index: 'researchers',
+        id: req.body.id,
+        body: {
+            script: {
+              source: "ctx._source.affiliations.removeIf(affiliation -> affiliation.equals(params.affiliation))",
+              lang: "painless",
+              params: {
+                  affiliation: req.body.affiliation
+              }
+            }
+          }
+    }, (err, result) => {
+        if (err) {
+            console.log(err.meta.body.error)
+        } else {
+            return res.status(200).send({
+                message: 'Successfully removed affiliation'
+            })
+        }
+    }); 
+})
+
 app.listen(port, () => {console.log('listening on port ' + port)});
