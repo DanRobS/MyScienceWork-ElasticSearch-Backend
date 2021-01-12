@@ -43,7 +43,7 @@ app.get('/getUser/:username', function (req, res) {
         }
     }, (err, result) => {
         if (err) {
-            console.log(err)
+            console.log(err.meta.body.error)
         } else {
             console.log(result.body.suggest)
             return res.status(200).send(
@@ -82,7 +82,7 @@ app.get('/getUserById/:id', function (req, res) {
           }
     }, (err, result) => {
         if (err) {
-            console.log(err)
+            console.log(err.meta.body.error)
         } else {
             console.log(result.body.hits.hits[0])
             return res.status(200).send(
@@ -112,7 +112,7 @@ app.post('/updateUserInfos', function (req, res) {
           }
     }, (err, result) => {
         if (err) {
-            console.log(err)
+            console.log(err.meta.body.error)
         } else {
             return res.status(200).send({
                 message: 'Successfully updated nom / prenom / about'
@@ -140,7 +140,7 @@ app.post('/updateSocialMedia', function (req, res) {
           }
     }, (err, result) => {
         if (err) {
-            console.log(err)
+            console.log(err.meta.body.error)
         } else {
             return res.status(200).send({
                 message: 'Successfully updated social media profiles'
@@ -166,10 +166,53 @@ app.post('/removeSocialMedia', function (req, res) {
           }
     }, (err, result) => {
         if (err) {
-            console.log(err)
+            console.log(err.meta.body.error)
         } else {
             return res.status(200).send({
                 message: 'Successfully removed social media id'
+            })
+        }
+    }); 
+})
+
+app.post('/updateAffiliation', function (req, res) {
+    req.header('Content-type', 'application/json');
+    
+    client.update({
+        index: 'researchers',
+        id: req.body.id,
+        body: {
+            script: {
+              source:"int index = ctx._source.affiliations.indexOf(params.aff_to_update); \
+                        if(index > -1) \
+                            {if(params.organisation != '') \
+                                {ctx._source.affiliations.get(index).organisation = params.organisation;} \
+                            ctx._source.affiliations.get(index).equipe = params.equipe; \
+                            if(params.dateDebut==null) \
+                                {ctx._source.affiliations.get(index).dateDebut = null;\
+                                 ctx._source.affiliations.get(index).dateFin = null;} \
+                                else {ctx._source.affiliations.get(index).dateDebut = params.dateDebut;} \
+                            if(params.dateFin==null) \
+                                {ctx._source.affiliations.get(index).dateFin = null;} \
+                                else {ctx._source.affiliations.get(index).dateFin = params.dateFin} \
+                            if(params.pays != '') {ctx._source.affiliations.get(index).pays = params.pays;}}",
+              lang: 'painless',
+              params: {
+                  aff_to_update: req.body.aff_to_update,
+                  dateDebut: req.body.dateDebut,
+                  organisation: req.body.organisation,
+                  dateFin: req.body.dateFin,
+                  equipe: req.body.equipe,
+                  pays: req.body.pays
+              }
+            }
+          }
+    }, (err, result) => {
+        if (err) {
+            console.log(err.meta.body.error)
+        } else {
+            return res.status(200).send({
+                message: 'Successfully updated affiliation'
             })
         }
     }); 
