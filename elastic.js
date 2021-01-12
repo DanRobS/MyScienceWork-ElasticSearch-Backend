@@ -101,7 +101,14 @@ app.post('/updateUserInfos', function (req, res) {
         id: req.body.id,
         body: {
             script: {
-              source: "if(params.nom != '') {ctx._source.nom = params.nom;} if(params.prenom != '') {ctx._source.prenom = params.prenom;} if(params.about != '') {ctx._source.about = params.about;}",
+              source:  "if(params.nom != '')\
+                            {ctx._source.nom = params.nom;}\
+                                                            \
+                        if(params.prenom != '')\
+                            {ctx._source.prenom = params.prenom;}\
+                                                                \
+                        if(params.about != '')\
+                            {ctx._source.about = params.about;}",
               lang: 'painless',
               params: {
                   nom: req.body.nom,
@@ -130,7 +137,17 @@ app.post('/updateSocialMedia', function (req, res) {
         id: req.body.id,
         body: {
             script: {
-              source: "if(params.name == 'Facebook') {ctx._source.facebook = params.identifier;} if(params.name == 'LinkedIn') {ctx._source.linkedin = params.identifier;} if(params.name == 'Twitter') {ctx._source.twitter = params.identifier;} if(params.name == 'Orcid') {ctx._source.orcid = params.identifier;}",
+              source:  "if(params.name == 'Facebook')\
+                            {ctx._source.facebook = params.identifier;} \
+                                                                        \
+                        if(params.name == 'LinkedIn')\
+                            {ctx._source.linkedin = params.identifier;} \
+                                                                        \
+                        if(params.name == 'Twitter')\
+                            {ctx._source.twitter = params.identifier;}\
+                                                                        \
+                        if(params.name == 'Orcid')\
+                            {ctx._source.orcid = params.identifier;}",
               lang: 'painless',
               params: {
                   name: req.body.social_media,
@@ -157,7 +174,17 @@ app.post('/removeSocialMedia', function (req, res) {
         id: req.body.id,
         body: {
             script: {
-              source: "if(params.name == 'Facebook') {ctx._source.facebook = '';} if(params.name == 'LinkedIn') {ctx._source.linkedin = '';} if(params.name == 'Twitter') {ctx._source.twitter = '';} if(params.name == 'Orcid') {ctx._source.orcid = '';}",
+              source:  "if(params.name == 'Facebook')\
+                            {ctx._source.facebook = '';} \
+                                                        \
+                        if(params.name == 'LinkedIn')\
+                            {ctx._source.linkedin = '';} \
+                                                        \
+                        if(params.name == 'Twitter') \
+                            {ctx._source.twitter = '';} \
+                                                        \
+                        if(params.name == 'Orcid')\
+                            {ctx._source.orcid = '';}",
               lang: 'painless',
               params: {
                   name: req.body.social_media
@@ -177,7 +204,7 @@ app.post('/removeSocialMedia', function (req, res) {
 
 app.post('/updateAffiliation', function (req, res) {
     req.header('Content-type', 'application/json');
-    
+    console.log(req.body);
     client.update({
         index: 'researchers',
         id: req.body.id,
@@ -187,15 +214,19 @@ app.post('/updateAffiliation', function (req, res) {
                         if(index > -1) \
                             {if(params.organisation != '') \
                                 {ctx._source.affiliations.get(index).organisation = params.organisation;} \
-                            ctx._source.affiliations.get(index).equipe = params.equipe; \
-                            if(params.dateDebut==null) \
+                            if(params.equipe =='')\
+                                {ctx._source.affiliations.get(index).equipe = '';} \
+                                else {ctx._source.affiliations.get(index).equipe = params.equipe;}\
+                            if(params.dateDebut==null || params.dateDebut=='') \
                                 {ctx._source.affiliations.get(index).dateDebut = null;\
-                                 ctx._source.affiliations.get(index).dateFin = null;} \
-                                else {ctx._source.affiliations.get(index).dateDebut = params.dateDebut;} \
-                            if(params.dateFin==null) \
+                                ctx._source.affiliations.get(index).dateFin = null;} \
+                                else \
+                                {ctx._source.affiliations.get(index).dateDebut = params.dateDebut;} \
+                            if(params.dateFin==null || params.dateFin=='') \
                                 {ctx._source.affiliations.get(index).dateFin = null;} \
                                 else {ctx._source.affiliations.get(index).dateFin = params.dateFin} \
-                            if(params.pays != '') {ctx._source.affiliations.get(index).pays = params.pays;}}",
+                            if(params.pays != '')\
+                                {ctx._source.affiliations.get(index).pays = params.pays;}}",
               lang: 'painless',
               params: {
                   aff_to_update: req.body.aff_to_update,
