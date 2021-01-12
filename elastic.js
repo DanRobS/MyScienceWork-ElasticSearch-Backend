@@ -19,6 +19,10 @@ app.use((req, res, next) => {
     next();
 })
 
+/*///////////////////////
+    GET METHODS SECTION
+*////////////////////////
+
 //GET METHOD FOR AUTOCOMPLETE USER SEARCH FIELD
 app.get('/getUser/:username', function (req, res) {
     req.header('Content-type', 'application/json');
@@ -91,6 +95,10 @@ app.get('/getUserById/:id', function (req, res) {
         }
     }); 
 })
+
+/*///////////////////////
+    POST METHODS SECTION
+*////////////////////////
 
 //POST METHOD TO UPDATE USER INFOS (NOM, PRENOM, ABOUT)
 app.post('/updateUserInfos', function (req, res) {
@@ -166,6 +174,7 @@ app.post('/updateSocialMedia', function (req, res) {
     }); 
 })
 
+//POTS METHOD FOR SOCIAL MEDIA REMOVAL
 app.post('/removeSocialMedia', function (req, res) {
     req.header('Content-type', 'application/json');
     
@@ -202,6 +211,7 @@ app.post('/removeSocialMedia', function (req, res) {
     }); 
 })
 
+//POST METHOD FOR AFFILIATION UPDATE
 app.post('/updateAffiliation', function (req, res) {
     req.header('Content-type', 'application/json');
     console.log(req.body);
@@ -249,6 +259,7 @@ app.post('/updateAffiliation', function (req, res) {
     }); 
 })
 
+//POST METHOD FOR AFFILIATION ADDING
 app.post('/addAffiliation', function (req, res) {
     req.header('Content-type', 'application/json');
     
@@ -274,6 +285,7 @@ app.post('/addAffiliation', function (req, res) {
     }); 
 })
 
+//POST METHOD FOR AFFILIATION REMOVAL
 app.post('/removeAffiliation', function (req, res) {
     req.header('Content-type', 'application/json');
     
