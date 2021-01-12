@@ -259,13 +259,7 @@ app.post('/addAffiliation', function (req, res) {
             script : {
               source: "ctx._source.affiliations.add(params.affiliation)",
               params : {
-                affiliation: {
-                    organisation: req.body.affiliation.organisation,
-                    equipe: req.body.affiliation.equipe,
-                    dateDebut: req.body.affiliation.dateDebut,
-                    dateFin: req.body.affiliation.dateFin,
-                    pays: req.body.affiliation.pays
-                } 
+                affiliation: req.body.affiliation
               }
             }
           }
