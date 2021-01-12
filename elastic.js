@@ -249,4 +249,35 @@ app.post('/updateAffiliation', function (req, res) {
     }); 
 })
 
+app.post('/addAffiliation', function (req, res) {
+    req.header('Content-type', 'application/json');
+    
+    client.update({
+        index: 'researchers',
+        id: req.body.id,
+        body: {
+            script : {
+              source: "ctx._source.affiliations.add(params.affiliation)",
+              params : {
+                affiliation: {
+                    organisation: req.body.affiliation.organisation,
+                    equipe: req.body.affiliation.equipe,
+                    dateDebut: req.body.affiliation.dateDebut,
+                    dateFin: req.body.affiliation.dateFin,
+                    pays: req.body.affiliation.pays
+                } 
+              }
+            }
+          }
+    }, (err, result) => {
+        if (err) {
+            console.log(err.meta.body.error)
+        } else {
+            return res.status(200).send({
+                message: 'Successfully added affiliation'
+            })
+        }
+    }); 
+})
+
 app.listen(port, () => {console.log('listening on port ' + port)});
