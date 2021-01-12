@@ -57,6 +57,49 @@ app.get('/getUser/:username', function (req, res) {
     }); 
 })
 
+app.get('/getPublicationsByUser/:user_fullName/:title_or_year', function (req, res) {
+    req.header('Content-type', 'application/json');
+    console.log(req.params.user_fullName)
+    client.search({
+        index: 'publications',
+        body: {
+            query: {
+              nested: {
+                path: 'auteurs',
+                query: {
+                  match: {
+                    'auteurs.nom': req.params.user_fullName
+                  }
+                }
+              }
+            },
+            suggest : {
+              suggest_publication_title : {
+                prefix : req.params.title_or_year,
+                completion : {
+                  field : 'titre'
+                }
+              },
+              suggest_publication_by_year : {
+                prefix : req.params.title_or_year,
+                completion : {
+                  field : 'annee'
+                }
+              }
+            }
+          }
+    }, (err, result) => {
+        if (err) {
+            console.log(err.meta.body.error)
+        } else {
+            console.log(result.body.suggest)
+            return res.status(200).send(
+                result.body.suggest
+            )
+        }
+    }); 
+})
+
 //GET METHOD TO GET A USER BY HIS ID
 app.get('/getUserById/:id', function (req, res) {
     req.header('Content-type', 'application/json');
