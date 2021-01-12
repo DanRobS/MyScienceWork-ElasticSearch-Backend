@@ -57,7 +57,7 @@ app.get('/getUser/:username', function (req, res) {
     }); 
 })
 
-app.get('/getPublicationsByUser/:user_fullName/:title_or_year', function (req, res) {
+app.get('/getPublicationsByUser/:user_fullName/:title', function (req, res) {
     req.header('Content-type', 'application/json');
     console.log(req.params.user_fullName)
     client.search({
@@ -75,15 +75,9 @@ app.get('/getPublicationsByUser/:user_fullName/:title_or_year', function (req, r
             },
             suggest : {
               suggest_publication_title : {
-                prefix : req.params.title_or_year,
+                prefix : req.params.title,
                 completion : {
                   field : 'titre'
-                }
-              },
-              suggest_publication_by_year : {
-                prefix : req.params.title_or_year,
-                completion : {
-                  field : 'annee'
                 }
               }
             }
@@ -92,9 +86,9 @@ app.get('/getPublicationsByUser/:user_fullName/:title_or_year', function (req, r
         if (err) {
             console.log(err.meta.body.error)
         } else {
-            console.log(result.body.suggest)
+            console.log(result.body.suggest.suggest_publication_title[0].options)
             return res.status(200).send(
-                result.body.suggest
+                result.body.suggest.suggest_publication_title[0].options
             )
         }
     }); 
