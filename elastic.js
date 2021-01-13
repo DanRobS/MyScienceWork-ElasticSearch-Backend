@@ -133,6 +133,31 @@ app.get('/getUserById/:id', function (req, res) {
     }); 
 })
 
+//GET METHOD TO GET A PUBLICATION BY ID
+app.get('/getPublicationById/:id', function (req, res) {
+    req.header('Content-type', 'application/json');
+    
+    client.search({
+        index: 'publications',
+        body: {
+            query: {
+                match: {
+                    _id: req.params.id
+                }
+            }
+        }
+    }, (err, result) => {
+        if (err) {
+            console.log(err.meta.body.error)
+        } else {
+            console.log(result.body.hits.hits[0])
+            return res.status(200).send(
+                result.body.hits.hits[0]
+            )
+        }
+    }); 
+})
+
 /*///////////////////////
     POST METHODS SECTION
 *////////////////////////
